@@ -1,0 +1,21 @@
+import express, { Application } from "express";
+import router from "./web/routes/dataset.routes";
+import loadConfig from "./config";
+import cors from "cors";
+import path from "path";
+
+const app: Application = express();
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "../public")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/index.html"));
+});
+
+app.use(router);
+
+app.listen(loadConfig().PORT, () => {
+  console.log(`Ahoy Cap'n, we be on port ${loadConfig().PORT}`);
+});
