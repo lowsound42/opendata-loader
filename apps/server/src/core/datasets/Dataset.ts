@@ -15,6 +15,12 @@ type DataResult = {
   ];
 };
 
+type ResourceArray = {
+  result: {
+    resources: any[];
+  };
+};
+
 type Data = {
   result: DataResult;
 };
@@ -27,4 +33,4 @@ type DataSets = {
   result: string[];
 };
 
-export { Data, DataResult, TableCheck, DataSets };
+export { Data, DataResult, TableCheck, DataSets, ResourceArray };

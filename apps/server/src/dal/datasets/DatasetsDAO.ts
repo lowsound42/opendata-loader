@@ -2,8 +2,12 @@ import {
   getCityDatasets,
   getDatasetByIdString,
 } from "../../CKANApi/apiRequests";
-import { Data, DataSets } from "../../core/datasets/Dataset";
-import { db } from "../db";
+import {
+  Data,
+  DataResult,
+  DataSets,
+  ResourceArray,
+} from "../../core/datasets/Dataset";
 
 const getDataSetsFromCKAN = async () => {
   const response = await getCityDatasets();
@@ -14,8 +18,7 @@ const getDataSetsFromCKAN = async () => {
 
 const getDatasetMetaById = async (id: string) => {
   const response = await getDatasetByIdString(id);
-  const { result } = (await response.json()) as DataSets | Data;
-  console.log(result);
+  const result = (await response.json()) as ResourceArray;
   return result;
 };
 
