@@ -15,9 +15,17 @@ type DataResult = {
   ];
 };
 
+type Resource = {
+  datastore_active: boolean | string;
+  datastore_resource_id: number | string;
+  id: number;
+  name: string;
+  record_count: number;
+};
+
 type ResourceArray = {
   result: {
-    resources: any[];
+    resources: Resource[];
   };
 };
 

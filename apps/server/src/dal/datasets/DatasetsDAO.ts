@@ -12,7 +12,6 @@ import {
 const getDataSetsFromCKAN = async () => {
   const response = await getCityDatasets();
   const { result } = (await response.json()) as DataSets;
-  console.log(result);
   return result;
 };
 
