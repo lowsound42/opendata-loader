@@ -31,14 +31,24 @@ router.get("/resources-page", (req, res) => {
   res.sendFile(path.join(__dirname, "../../../public/resources.html"));
 });
 
-router.post("/create", (req, res) => {
-  console.log(req.body);
+router.post("/create", async (req, res) => {
+  const { id, name } = req.body;
+  await datasetController.createNewTable(id, name);
+  res.send(true);
+});
+
+router.post("/upload", async (req, res) => {
+  const { id, name } = req.body;
+  await datasetController.uploadIntoTable(id, name);
   res.send(true);
 });
 
 router.get("/fields", async (req, res) => {
-  const { id } = req.query;
-  const data = await datasetController.getDatasetFieldsById(id as string);
+  const { id, name } = req.query;
+  const data = await datasetController.getDatasetFieldsById(
+    id as string,
+    name as string,
+  );
   res.send(data);
 });
 

@@ -75,14 +75,15 @@ const createTable = async (data: Data, tableName: string) => {
   }
   const sql = `
       CREATE TABLE IF NOT EXISTS datasets.${pg.as.name(tableName)} (
-        id int8 GENERATED ALWAYS AS IDENTITY,
+        row_id int8 GENERATED ALWAYS AS IDENTITY,
         resource_id varchar(100) NOT NULL,
         ${fieldCreators.join(",\n      ")},
-        CONSTRAINT ${pg.as.name(constraintName)} PRIMARY KEY (id),
+        CONSTRAINT ${pg.as.name(constraintName)} PRIMARY KEY (row_id),
         CONSTRAINT ${pg.as.name(`${tableName}_resource_record_uq`)} UNIQUE (resource_id, _id)
       )`;
   try {
     await db.none(sql, { tableName });
+    return true;
   } catch (err) {
     throw new Error(String(err));
   }

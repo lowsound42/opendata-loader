@@ -16,7 +16,10 @@
         hx-get="/fields"
         hx-trigger="load"
         hx-swap="outerHTML"
-        hx-vals="js:{id: new URLSearchParams(window.location.search).get('id')}"
+        hx-vals="js:{
+        id: new URLSearchParams(window.location.search).get('id'),
+        name: new URLSearchParams(window.location.search).get('name')
+        }"
       ></div>
 
       <table>

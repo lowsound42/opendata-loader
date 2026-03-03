@@ -21,6 +21,26 @@ const checkIfTableExists = async (tableName: string) => {
   return result.exists;
 };
 
+const uploadData = async (id: string, tableName: string) => {
+  let offset = 0;
+  while (true) {
+    const response = await fetch(
+      `https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${offset}`,
+    );
+    const data: Data = (await response.json()) as Data;
+
+    if (!(await checkIfTableExists(tableName)))
+      await createTable(data, tableName);
+
+    if (data.result.records.length === 0) break;
+
+    await insertData(data.result, tableName, data.result.resource_id);
+    offset += 100;
+  }
+
+  return true;
+};
+
 const processData = async (dataset: Downloads, tableName: string) => {
   let offset = 0;
   while (true) {
@@ -42,4 +62,4 @@ const processData = async (dataset: Downloads, tableName: string) => {
   return true;
 };
 
-export { processData };
+export { processData, uploadData };
