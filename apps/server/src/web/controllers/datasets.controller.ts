@@ -1,5 +1,6 @@
 import { Data } from "../../core/datasets/Dataset";
 import {
+  checkIfTableColumnsExist,
   getDatasetMetaById,
   getDataSetsFromCKAN,
 } from "../../dal/datasets/DatasetsDAO";
@@ -20,13 +21,39 @@ const getCityDatasets = async () => {
 };
 
 const getDatasetFieldsById = async (id: string) => {
-  console.log(id);
   const datasetMeta = await fetch(
     `https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${0}`,
   );
   const response = (await datasetMeta.json()) as Data;
+  const fields = response.result.fields.map((f) => {
+    return f.id;
+  });
 
-  return response.result.fields;
+  const status = await checkIfTableColumnsExist(fields);
+  const rows = response.result.fields
+    .map(
+      (f) => `<tr>
+        <td>${f.id}</td>
+        <td>${f.type}</td>
+        <td>${f.info?.notes ?? ""}</td>
+      </tr>`,
+    )
+    .join("");
+  console.log(rows);
+  const createButton = `<button
+    hx-post="create"
+    hx-vals='{"id": "${id}", "name": "my_table"}'
+    >create table</button>`;
+  return `
+    <div id="fields-status">
+      ${status}
+      ${!status ? createButton : ""}
+    </div>
+    <table>
+      <tbody id="fields" hx-swap-oob="true">
+        ${rows}
+      </tbody>
+    </table>`;
 };
 
 const getDatasetById = async (id: string) => {

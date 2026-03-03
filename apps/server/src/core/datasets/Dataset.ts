@@ -10,7 +10,7 @@ type DataResult = {
     {
       id: string;
       type: string;
-      info?: string;
+      info?: { notes?: string };
     },
   ];
 };

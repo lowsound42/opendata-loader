@@ -31,11 +31,15 @@ router.get("/resources-page", (req, res) => {
   res.sendFile(path.join(__dirname, "../../../public/resources.html"));
 });
 
+router.post("/create", (req, res) => {
+  console.log(req.body);
+  res.send(true);
+});
+
 router.get("/fields", async (req, res) => {
   const { id } = req.query;
-  const rows = await datasetController.getDatasetFieldsById(id as string);
-  console.log(rows);
-  res.send(rows);
+  const data = await datasetController.getDatasetFieldsById(id as string);
+  res.send(data);
 });
 
 router.get("/resource", async (req, reply) => {
