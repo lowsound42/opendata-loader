@@ -16,6 +16,6 @@ app.get("/", (req, res) => {
 
 app.use(router);
 
-app.listen(loadConfig().PORT, () => {
+app.listen(Number(loadConfig().PORT), "0.0.0.0", () => {
   console.log(`Ahoy Cap'n, we be on port ${loadConfig().PORT}`);
 });
