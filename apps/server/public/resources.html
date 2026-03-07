@@ -11,43 +11,22 @@
     <h1>CoT Open Data</h1>
     <div id="datasets">
       <h2>Datastore Resources</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Records</th>
-            <th>Resource ID</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody
-          id="datastore-resources"
-          hx-get="/resource"
-          hx-trigger="load"
-          hx-vals="js:{id: new URLSearchParams(window.location.search).get('id')}"
-        >
-          <tr>
-            <td colspan="4">Loading...</td>
-          </tr>
-        </tbody>
-      </table>
+      <table
+        id="datastore-resources"
+        hx-get="/resource/datastores"
+        hx-trigger="load"
+        hx-swap="innerHTML"
+        hx-vals="js:{id: new URLSearchParams(window.location.search).get('id')}"
+      ></table>
 
       <h2>Download Resources</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Records</th>
-            <th>Resource ID</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="download-resources">
-          <tr>
-            <td colspan="4">Loading...</td>
-          </tr>
-        </tbody>
-      </table>
+      <table
+        id="download-resources"
+        hx-get="/resource/datafiles"
+        hx-trigger="load"
+        hx-swap="innerHTML"
+        hx-vals="js:{id: new URLSearchParams(window.location.search).get('id')}"
+      ></table>
     </div>
   </body>
 </html>

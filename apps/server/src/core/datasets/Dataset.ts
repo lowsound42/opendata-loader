@@ -25,6 +25,7 @@ type Resource = {
 
 type ResourceArray = {
   result: {
+    id: number;
     resources: Resource[];
   };
 };

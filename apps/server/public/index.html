@@ -4,26 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CoT Open Data Loader</title>
+    <link rel="stylesheet" href="css/main.css" />
     <script src="./htmx.js"></script>
   </head>
   <body>
-    <h1>CoT Open Data</h1>
+    <h1>Available Data Sets</h1>
     <div id="datasets">
-      <table id="dataset-body" hx-get="/datasets" hx-trigger="load">
-        <thead>
-          <tr>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colspan="2">
-              <button></button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <table id="dataset-body" hx-get="/datasets" hx-trigger="load"></table>
     </div>
   </body>
 </html>

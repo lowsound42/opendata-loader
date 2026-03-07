@@ -1,0 +1,11 @@
+@import url("./fonts.css");
+
+h1 {
+  font-family: quattro;
+}
+
+a {
+  font-family: quattroSans;
+  color: black;
+  text-decoration: none;
+}
