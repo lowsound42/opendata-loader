@@ -39,13 +39,12 @@ const checkIfTableColumnsExist = async (columns: string[]) => {
     HAVING COUNT(DISTINCT column_name) = $(numColumns);
     `;
 
-  const result = await db.oneOrNone(sql, {
+  const result = await db.manyOrNone(sql, {
     columns,
     numColumns,
   });
-
   if (result) {
-    return result.table_name;
+    return result;
   } else return null;
 };
 

@@ -162,7 +162,7 @@ const getDatafilesById = async (id: string) => {
          <td class="td-name">${r.name}</td>
          <td class="td-record-count">${r.record_count?.toLocaleString() ?? "—"}</td>
          <td class="td-resource-id">${resourceId}asdads</td>
-         <td class="td-link"><a href=https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/${datasetMeta.result.id}/resource/${datasetMeta.result.resources[0]!.id}/download/${r.name}>go</a></td>
+         <td class="td-link"><a href=${r.url}>go</a></td>
        </tr>
      `;
     })
