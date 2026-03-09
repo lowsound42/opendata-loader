@@ -7,3 +7,5 @@ dist/
 scratch.txt
 
 database
+
+extra-ca-certs.cer
