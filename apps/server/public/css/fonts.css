@@ -1,0 +1,9 @@
+@font-face {
+  font-family: quattro;
+  src: url("../fonts/Quattrocento-Regular.ttf");
+}
+
+@font-face {
+  font-family: quattroSans;
+  src: url("../fonts/QuattrocentoSans-Regular.ttf");
+}

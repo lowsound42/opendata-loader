@@ -8,6 +8,8 @@ import {
   DataSets,
   ResourceArray,
 } from "../../core/datasets/Dataset";
+import { TableStatus } from "../../core/TableStatus";
+import { completeTableLog, insertTableLog } from "../dashboard/DashDAO";
 import { db, pg } from "../db";
 export const normalize = (name: string) =>
   name
@@ -48,13 +50,12 @@ const checkIfTableColumnsExist = async (columns: string[]) => {
     HAVING COUNT(DISTINCT column_name) = $(numColumns);
     `;
 
-  const result = await db.oneOrNone(sql, {
-    normalizedColumns,
+  const result = await db.manyOrNone(sql, {
+    columns,
     numColumns,
   });
-
   if (result) {
-    return result.table_name;
+    return result;
   } else return null;
 };
 
@@ -72,6 +73,7 @@ const getDatasetMetaById = async (id: string) => {
 
 const createTable = async (data: Data, tableName: string) => {
   console.log("creating table");
+  const resourceId = data.result.resource_id;
   const constraintName = `${tableName}_pkey`;
   const fieldCreators = [];
   for (const field of data.result.fields) {
@@ -91,7 +93,9 @@ const createTable = async (data: Data, tableName: string) => {
         CONSTRAINT ${pg.as.name(`${tableName}_resource_record_uq`)} UNIQUE (resource_id, _id)
       )`;
   try {
-    await db.none(sql);
+    const id = await insertTableLog(tableName, resourceId, TableStatus.init);
+    await db.none(sql, { tableName });
+    await completeTableLog(id, TableStatus.created);
     return true;
   } catch (err) {
     throw new Error(String(err));

@@ -54,7 +54,7 @@ const getCityDatasets = async () => {
       (id, i) => `<tr>
           <td>${i + 1}</td>
           <td>
-            <a href="/resources-page?id=${id}"><button>${id}</button></a>
+            <a href="/resources-page?id=${id}">${id}</a>
           </td>
         </tr>`,
     )
@@ -112,10 +112,8 @@ const uploadIntoTable = async (id: string, name: string) => {
   return await uploadData(id, name);
 };
 
-const getDatasetById = async (id: string) => {
+const getDatastoresById = async (id: string) => {
   const datasetMeta = await getDatasetMetaById(id);
-  console.log(datasetMeta.result.resources);
-
   const datastoreRows = datasetMeta.result.resources
     .filter((r) => r.datastore_active && r.datastore_active !== "False")
     .map((r) => {
@@ -135,7 +133,23 @@ const getDatasetById = async (id: string) => {
      `;
     })
     .join("");
+  return `
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Records</th>
+      <th>Resource ID</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    ${datastoreRows}
+  </tbody>
+  `;
+};
 
+const getDatafilesById = async (id: string) => {
+  const datasetMeta = await getDatasetMetaById(id);
   const downloadRows = datasetMeta.result.resources
     .filter((r) => !r.datastore_active || r.datastore_active === "False")
     .map((r) => {
@@ -144,29 +158,35 @@ const getDatasetById = async (id: string) => {
           ? r.datastore_resource_id
           : r.id;
       return `
-       <tr class="resource-rows">
+       <tr >
          <td class="td-name">${r.name}</td>
          <td class="td-record-count">${r.record_count?.toLocaleString() ?? "—"}</td>
-         <td class="td-resource-id">${resourceId}</td>
-         <td class="td-link"><a href=https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/datastore_search?resource_id=${resourceId}&limit=100&offset=0>go</a></td>
+         <td class="td-resource-id">${resourceId}asdads</td>
+         <td class="td-link"><a href=${r.url}>go</a></td>
        </tr>
      `;
     })
     .join("");
 
   return `
-    <tbody id="datastore-resources">
-      ${datastoreRows}
-    </tbody>
-    <tbody id="download-resources" hx-swap-oob="true">
-      ${downloadRows}
-    </tbody>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Records</th>
+      <th>Resource ID</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    ${downloadRows}
+  </tbody>
   `;
 };
 
 export {
   getCityDatasets,
-  getDatasetById,
+  getDatastoresById,
+  getDatafilesById,
   getDatasetFieldsById,
   createNewTable,
   uploadIntoTable,

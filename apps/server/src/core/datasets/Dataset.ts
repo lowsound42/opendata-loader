@@ -21,10 +21,12 @@ type Resource = {
   id: number;
   name: string;
   record_count: number;
+  url: string;
 };
 
 type ResourceArray = {
   result: {
+    id: number;
     resources: Resource[];
   };
 };

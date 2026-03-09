@@ -17,12 +17,6 @@ router.get("/test", async (req: Request, res: Response) => {
   res.json(result);
 });
 
-router.get("/dataset", async (req, res) => {
-  const { id } = req.query;
-  const response = await datasetController.getDatasetById(id as string);
-  res.send(response);
-});
-
 router.get("/fields-page", (req, res) => {
   res.sendFile(path.join(__dirname, "../../../public/fields.html"));
 });
@@ -52,9 +46,15 @@ router.get("/fields", async (req, res) => {
   res.send(data);
 });
 
-router.get("/resource", async (req, reply) => {
+router.get("/resource/datastores", async (req, reply) => {
   const { id } = req.query as { id: string };
-  const html = await datasetController.getDatasetById(id);
+  const html = await datasetController.getDatastoresById(id);
+  reply.type("text/html").send(html);
+});
+
+router.get("/resource/datafiles", async (req, reply) => {
+  const { id } = req.query as { id: string };
+  const html = await datasetController.getDatafilesById(id);
   reply.type("text/html").send(html);
 });
 
