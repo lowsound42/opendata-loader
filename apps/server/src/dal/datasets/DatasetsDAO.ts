@@ -51,7 +51,7 @@ const checkIfTableColumnsExist = async (columns: string[]) => {
     `;
 
   const result = await db.manyOrNone(sql, {
-    columns,
+    normalizedColumns,
     numColumns,
   });
   if (result) {
