@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:23-alpine
 COPY ./extra-ca-certs.cer /usr/local/share/ca-certificates/extra-ca-certs.crt
 ARG NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/extra-ca-certs.crt
 

@@ -9,7 +9,7 @@ import {
   ResourceArray,
 } from "../../core/datasets/Dataset";
 import { TableStatus } from "../../core/TableStatus";
-import { completeTableLog, insertTableLog } from "../dashboard/DashDAO";
+import { updateTableStatus, insertTableLog } from "../dashboard/DashDAO";
 import { db, pg } from "../db";
 export const normalize = (name: string) =>
   name
@@ -49,7 +49,7 @@ const checkIfTableColumnsExist = async (columns: string[]) => {
     GROUP BY table_name
     HAVING COUNT(DISTINCT column_name) = $(numColumns);
     `;
-
+    
   const result = await db.manyOrNone(sql, {
     normalizedColumns,
     numColumns,
@@ -58,6 +58,33 @@ const checkIfTableColumnsExist = async (columns: string[]) => {
     return result;
   } else return null;
 };
+
+const checkIfTableExists = async (tableName: string) => {
+  const sql = `
+    SELECT id from data_sources
+    where table_name = $(tableName);
+  `
+  try{
+    const {id} = await db.oneOrNone(sql, { tableName });
+    return id;
+  } catch (err) {
+    return null
+  }
+}
+
+const checkIfTableHasData = async (tableName: string) => {
+  const sql = `
+    SELECT id from data_sources
+    where table_name = $(tableName)
+    and current_status = 'populated';
+  `
+  try{
+    const {id} = await db.oneOrNone(sql, { tableName });
+    return id;
+  } catch (err) {
+    return null
+  }
+}
 
 const getDataSetsFromCKAN = async () => {
   const response = await getCityDatasets();
@@ -95,7 +122,7 @@ const createTable = async (data: Data, tableName: string) => {
   try {
     const id = await insertTableLog(tableName, resourceId, TableStatus.init);
     await db.none(sql, { tableName });
-    await completeTableLog(id, TableStatus.created);
+    await updateTableStatus(id, TableStatus.created);
     return true;
   } catch (err) {
     throw new Error(String(err));
@@ -107,6 +134,7 @@ const insertData = async (
   tableName: string,
   resourceId: string,
 ) => {
+  const id = await checkIfTableExists(tableName);
   const rows = data.records.map((row) => {
     const normalized: Record<string, unknown> = { resource_id: resourceId };
     for (const [key, value] of Object.entries(row)) {
@@ -125,10 +153,12 @@ const insertData = async (
   const sql =
     pg.helpers.insert(rows, cs) +
     ` ON CONFLICT (resource_id, _id) DO UPDATE SET ${cs.assignColumns({ from: "EXCLUDED", skip: ["id", "resource_id", "_id"] })}`;
-
   try {
+    await updateTableStatus(id, TableStatus.populating );
     await db.none(sql);
+    await updateTableStatus(id, TableStatus.populated);
   } catch (err) {
+    await updateTableStatus(id, TableStatus.errored);
     throw new Error(String(err));
   }
   return true;
@@ -136,6 +166,8 @@ const insertData = async (
 
 export {
   getDataSetsFromCKAN,
+  checkIfTableHasData,
+  checkIfTableExists,
   getDatasetMetaById,
   checkIfTableColumnsExist,
   createTable,

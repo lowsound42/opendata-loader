@@ -23,7 +23,7 @@ const insertTableLog = async (
   return result.id;
 };
 
-const completeTableLog = async (id: number, status: TableStatus) => {
+const updateTableStatus = async (id: number, status: TableStatus) => {
   const sql = `
       UPDATE data_sources
       SET current_status = $(status)
@@ -33,4 +33,5 @@ const completeTableLog = async (id: number, status: TableStatus) => {
   await db.none(sql, { id, status });
 };
 
-export { insertTableLog, completeTableLog };
+
+export { insertTableLog, updateTableStatus };

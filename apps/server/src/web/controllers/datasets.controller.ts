@@ -1,6 +1,7 @@
 import { Data } from "../../core/datasets/Dataset";
 import {
   checkIfTableColumnsExist,
+  checkIfTableExists,
   createTable,
   getDatasetMetaById,
   getDataSetsFromCKAN,
@@ -70,7 +71,7 @@ const getDatasetFieldsById = async (id: string, name: string) => {
   const fields = response.result.fields.map((f) => {
     return f.id;
   });
-  const status = await checkIfTableColumnsExist(fields);
+  const status = await checkIfTableExists(fixTableName(name));
   const rows = response.result.fields
     .map(
       (f) => `<tr>
@@ -90,7 +91,7 @@ const getDatasetFieldsById = async (id: string, name: string) => {
     >upload resource into table</button>`;
   return `
     <div id="fields-status">
-      ${status}
+      ${status ? `<p>Table Exists <span class="greenStatus"></span></p>` : `<p>Table Does Not Exist <span class="redStatus"></span></p>`}
       ${!status ? createButton : uploadButton}
     </div>
     <table>
