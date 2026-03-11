@@ -1,3 +1,4 @@
+import { getBaseUrl } from "../../../CKANApi/baseUrl";
 import { Data, DataResult, TableCheck } from "../../../core/datasets/Dataset";
 import { createTable, insertData } from "../../datasets/DatasetsDAO";
 import { db, pg } from "../../db";
@@ -25,7 +26,7 @@ const uploadData = async (id: string, tableName: string) => {
   let offset = 0;
   while (true) {
     const response = await fetch(
-      `https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${offset}`,
+      `${getBaseUrl()}/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${offset}`,
     );
     const data: Data = (await response.json()) as Data;
 
@@ -46,7 +47,7 @@ const processData = async (dataset: Downloads, tableName: string) => {
   while (true) {
     console.log(offset);
     const response = await fetch(
-      `https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/datastore_search?resource_id=${dataset.id}&limit=100&offset=${offset}`,
+      `${getBaseUrl()}/api/3/action/datastore_search?resource_id=${dataset.id}&limit=100&offset=${offset}`,
     );
     const data: Data = (await response.json()) as Data;
 

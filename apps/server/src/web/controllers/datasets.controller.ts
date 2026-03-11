@@ -1,3 +1,4 @@
+import { getBaseUrl } from "../../CKANApi/baseUrl";
 import { Data } from "../../core/datasets/Dataset";
 import {
   checkIfTableColumnsExist,
@@ -8,6 +9,15 @@ import {
   getDataSetsFromCKAN,
 } from "../../dal/datasets/DatasetsDAO";
 import { uploadData } from "../../dal/pipelines/process/processData";
+
+function toAcronym(input: string) {
+  return input
+    .split(/[\s_]+/)
+    .map(word => word[0])
+    .join('')
+    .toLowerCase();
+}
+
 
 const STOP_WORDS = new Set([
   "a",
@@ -34,6 +44,7 @@ const STOP_WORDS = new Set([
 ]);
 
 const fixTableName = (name: string) => {
+    console.log(name)
   return name
     .toLowerCase()
     .replace(/\b\d{1,4}[-\/]\d{1,2}[-\/]\d{1,4}\b/g, "")
@@ -64,18 +75,21 @@ const getCityDatasets = async () => {
   return rows;
 };
 
-const getDatasetFieldsById = async (id: string, name: string) => {
+const getDatasetFieldsById = async (id: string, name: string, acro: string) => {
+  const acroFromName = toAcronym(fixTableName(acro));
   const datasetMeta = await fetch(
-    `https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${0}`,
+    `${getBaseUrl()}/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${0}`,
   );
+    const tableName = `${acroFromName}_${fixTableName(name)}`
   const response = (await datasetMeta.json()) as Data;
   const fields = response.result.fields.map((f) => {
     return f.id;
   });
-  const status = await checkIfTableExists(fixTableName(name));
-  let populated = false;
-  if(status){
-    populated = await checkIfTableHasData(fixTableName(name));
+    const status = await checkIfTableExists(tableName);
+    console.log(status)
+    let populated = false;
+    if (status) {
+    populated = await checkIfTableHasData(tableName);
   }
   const rows = response.result.fields
     .map(
@@ -88,11 +102,11 @@ const getDatasetFieldsById = async (id: string, name: string) => {
     .join("");
   const createButton = `<button
     hx-post="create"
-    hx-vals='{"id": "${id}", "name": "${fixTableName(name)}"}'
+    hx-vals='{"id": "${id}", "name": "${tableName}"}'
     >create table</button>`;
   const uploadButton = `<button
     hx-post="upload"
-    hx-vals='{"id": "${id}", "name": "${fixTableName(name)}"}'
+    hx-vals='{"id": "${id}", "name": "${tableName}"}'
     >upload resource into table</button>`;
   return `
     <div id="fields-status">
@@ -108,7 +122,7 @@ const getDatasetFieldsById = async (id: string, name: string) => {
 
 const createNewTable = async (id: string, name: string) => {
   const response = await fetch(
-    `https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${0}`,
+    `${getBaseUrl()}/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${0}`,
   );
   const data: Data = (await response.json()) as Data;
   return await createTable(data, name);
@@ -133,7 +147,7 @@ const getDatastoresById = async (id: string) => {
          <td class="td-record-count">${r.record_count?.toLocaleString() ?? "—"}</td>
          <td class="td-resource-id">${resourceId}</td>
          <td>
-           <a href="/fields-page?id=${resourceId}&name=${r.name}"><button>check it out</button></a>
+           <a href="/fields-page?id=${resourceId}&acro=${r.name}&name=${id}"><button>check it out</button></a>
          </td>
        </tr>
      `;

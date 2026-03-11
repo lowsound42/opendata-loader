@@ -38,10 +38,12 @@ router.post("/upload", async (req, res) => {
 });
 
 router.get("/fields", async (req, res) => {
-  const { id, name } = req.query;
+    const { id, name, acro } = req.query;
+    console.log(req.query)
   const data = await datasetController.getDatasetFieldsById(
     id as string,
     name as string,
+    acro as string
   );
   res.send(data);
 });

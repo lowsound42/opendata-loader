@@ -1,3 +1,5 @@
+import { getBaseUrl } from "../../CKANApi/baseUrl";
+
 type APIResult = {
   result: {
     resources: any[];
@@ -14,7 +16,7 @@ const downloadResources: Downloads[] = [];
 
 const callCKAN = async (packageId: string) => {
   const result = fetch(
-    `https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/package_show?id=${packageId}`,
+    `${getBaseUrl()}/api/3/action/package_show?id=${packageId}`,
     { method: "GET" },
   );
 

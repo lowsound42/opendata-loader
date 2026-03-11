@@ -49,17 +49,18 @@ const checkIfTableColumnsExist = async (columns: string[]) => {
     GROUP BY table_name
     HAVING COUNT(DISTINCT column_name) = $(numColumns);
     `;
-    
+
   const result = await db.manyOrNone(sql, {
     normalizedColumns,
     numColumns,
   });
-  if (result) {
+  if (result.length > 0) {
     return result;
   } else return null;
 };
 
 const checkIfTableExists = async (tableName: string) => {
+    console.log(tableName)
   const sql = `
     SELECT id from data_sources
     where table_name = $(tableName);
@@ -101,14 +102,13 @@ const getDatasetMetaById = async (id: string) => {
 const createTable = async (data: Data, tableName: string) => {
   console.log("creating table");
   const resourceId = data.result.resource_id;
-  const constraintName = `${tableName}_pkey`;
+  const constraintName = `pkey_${tableName}`;
   const fieldCreators = [];
   for (const field of data.result.fields) {
     if (!ALLOWED_TYPES.has(field.type.toLowerCase())) {
       throw new Error(`Invalid column type: ${field.type}`);
     }
     const columnIdentifier = `${pg.as.name(normalize(field.id))} ${field.type} NULL`;
-    console.log(columnIdentifier)
     fieldCreators.push(columnIdentifier);
   }
   const sql = `
@@ -117,8 +117,10 @@ const createTable = async (data: Data, tableName: string) => {
         resource_id varchar(100) NOT NULL,
         ${fieldCreators.join(",\n      ")},
         CONSTRAINT ${pg.as.name(constraintName)} PRIMARY KEY (row_id),
-        CONSTRAINT ${pg.as.name(`${tableName}_resource_record_uq`)} UNIQUE (resource_id, _id)
+        CONSTRAINT ${pg.as.name(`resource_record_uq_${tableName}`)} UNIQUE (resource_id, _id)
       )`;
+
+    console.log(sql)
   try {
     const id = await insertTableLog(tableName, resourceId, TableStatus.init);
     await db.none(sql, { tableName });
