@@ -2,6 +2,7 @@ import { Data } from "../../core/datasets/Dataset";
 import {
   checkIfTableColumnsExist,
   checkIfTableExists,
+  checkIfTableHasData,
   createTable,
   getDatasetMetaById,
   getDataSetsFromCKAN,
@@ -72,6 +73,10 @@ const getDatasetFieldsById = async (id: string, name: string) => {
     return f.id;
   });
   const status = await checkIfTableExists(fixTableName(name));
+  let populated = false;
+  if(status){
+    populated = await checkIfTableHasData(fixTableName(name));
+  }
   const rows = response.result.fields
     .map(
       (f) => `<tr>
@@ -92,7 +97,7 @@ const getDatasetFieldsById = async (id: string, name: string) => {
   return `
     <div id="fields-status">
       ${status ? `<p>Table Exists <span class="greenStatus"></span></p>` : `<p>Table Does Not Exist <span class="redStatus"></span></p>`}
-      ${!status ? createButton : uploadButton}
+      ${!status ? createButton :  !populated ? uploadButton : "<p>Table and data exist!</p>"}
     </div>
     <table>
       <tbody id="fields" hx-swap-oob="true">
