@@ -1,5 +1,5 @@
 import {
-  getCityDatasets,
+  getDatasets,
   getDatasetByIdString,
 } from "../../CKANApi/apiRequests";
 import {
@@ -35,6 +35,14 @@ const ALLOWED_TYPES = new Set([
   "json",
   "jsonb",
 ]);
+
+const getDatasetMeta = async () => {
+  const sql = `
+    SELECT * FROM ckan_sets;
+  `;
+  const result = await db.manyOrNone(sql);
+  return result;
+};
 
 const checkIfTableColumnsExist = async (columns: string[]) => {
     const normalizedColumns = columns.map(c => {
@@ -88,7 +96,7 @@ const checkIfTableHasData = async (tableName: string) => {
 }
 
 const getDataSetsFromCKAN = async () => {
-  const response = await getCityDatasets();
+  const response = await getDatasets();
   const { result } = (await response.json()) as DataSets;
   return result;
 };
@@ -192,6 +200,7 @@ const insertData = async (
 };
 
 export {
+  getDatasetMeta,
   getDataSetsFromCKAN,
   checkIfTableHasData,
   checkIfTableExists,

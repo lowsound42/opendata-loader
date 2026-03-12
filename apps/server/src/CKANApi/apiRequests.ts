@@ -1,7 +1,6 @@
 import { baseUrl } from "../web/urlStore";
 
-const getCityDatasets = async () => {
-    console.log(await baseUrl())
+const getDatasets = async () => {
   const response = fetch(`${await baseUrl()}/api/3/action/package_list`, {
     method: "GET",
   });
@@ -15,4 +14,4 @@ const getDatasetByIdString = async (id: string) => {
   return response;
 };
 
-export { getCityDatasets, getDatasetByIdString };
+export { getDatasets, getDatasetByIdString };

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CoT Open Data Loader</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="./htmx.js"></script>
+  </head>
+  <body>
+    <h1>Available Data Sets</h1>
+    <h2>Your base URL: <span id="base-url" hx-get="/base-url" hx-trigger="load, refresh"></span></h2>
+    <div>
+        <p>Try a different base URL:
+            <select id="new-base-url" name="data" hx-get="/base-url-options" hx-trigger="load">
+              <option value="">Loading...</option>
+            </select>
+            <button
+              hx-post="/set-base-url"
+              hx-include="#new-base-url"
+              hx-on::after-request="htmx.trigger('#dataset-body', 'refresh'); htmx.trigger('#base-url', 'refresh')"
+            >Set</button></p>
+    </div>
+    <div id="datasets">
+        <table id="dataset-body" hx-get="/datasets" hx-trigger="load, refresh from:body"></table>
+    </div>
+  </body>
+</html>

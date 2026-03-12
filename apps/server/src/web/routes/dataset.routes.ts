@@ -1,15 +1,21 @@
 import { Router, Request, Response } from "express";
 import { runPipeLines } from "../../dal/pipelines";
 import * as datasetController from "../controllers/datasets.controller";
+import * as homeController from "../controllers/home.controller"
 import path from "path";
 
-const dataSetRouter = Router();
+const datasetRouter = Router();
 
-dataSetRouter.get("/", (req, res) => {
+datasetRouter.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
-dataSetRouter.get("/test", async (req: Request, res: Response) => {
+datasetRouter.get("/meta", async (req: Request, res: Response) => {
+  const meta = await homeController.datasetMeta();
+  res.send(meta);
+});
+
+datasetRouter.get("/test", async (req: Request, res: Response) => {
   const result = await runPipeLines(
     "tmc_raw_data",
     "811c4c10-7e5d-4c76-8d42-dab4e31c8265",
@@ -17,28 +23,28 @@ dataSetRouter.get("/test", async (req: Request, res: Response) => {
   res.json(result);
 });
 
-dataSetRouter.get("/fields-page", (req, res) => {
+datasetRouter.get("/fields-page", (req, res) => {
   res.sendFile(path.join(__dirname, "../../../public/fields.html"));
 });
 
-dataSetRouter.get("/resources-page", (req, res) => {
+datasetRouter.get("/resources-page", (req, res) => {
   res.sendFile(path.join(__dirname, "../../../public/resources.html"));
 });
 
-dataSetRouter.post("/create", async (req, res) => {
+datasetRouter.post("/create", async (req, res) => {
   const { id, name } = req.body;
   await datasetController.createNewTable(id, name);
   res.send(true);
 });
 
-dataSetRouter.post("/upload", async (req, res) => {
+datasetRouter.post("/upload", async (req, res) => {
   const { id, name } = req.body;
   await datasetController.uploadIntoTable(id, name);
   res.send(true);
 });
 
 
-dataSetRouter.get("/fields", async (req, res) => {
+datasetRouter.get("/fields", async (req, res) => {
     const { id, name, acro, schema } = req.query;
   const data = await datasetController.getDatasetFieldsById(
     id as string,
@@ -49,21 +55,21 @@ dataSetRouter.get("/fields", async (req, res) => {
   res.send(data);
 });
 
-dataSetRouter.get("/resource/datastores", async (req, reply) => {
+datasetRouter.get("/resource/datastores", async (req, reply) => {
     const { id } = req.query as { id: string; };
   const html = await datasetController.getDatastoresById(id);
   reply.type("text/html").send(html);
 });
 
-dataSetRouter.get("/resource/datafiles", async (req, reply) => {
+datasetRouter.get("/resource/datafiles", async (req, reply) => {
   const { id } = req.query as { id: string };
   const html = await datasetController.getDatafilesById(id);
   reply.type("text/html").send(html);
 });
 
-dataSetRouter.get("/datasets", async (req: Request, res: Response) => {
+datasetRouter.get("/datasets", async (req: Request, res: Response) => {
   const rows = await datasetController.getCityDatasets();
   res.send(`<tbody>${rows}</tbody>`);
 });
 
-export default dataSetRouter;
+export default datasetRouter;
