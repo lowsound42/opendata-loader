@@ -75,7 +75,7 @@ const getCityDatasets = async () => {
   return rows;
 };
 
-const getDatasetFieldsById = async (id: string, name: string, acro: string) => {
+const getDatasetFieldsById = async (id: string, name: string, acro: string, schema: string) => {
   const acroFromName = toAcronym(fixTableName(acro));
   const datasetMeta = await fetch(
     `${await baseUrl()}/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${0}`,
@@ -102,7 +102,7 @@ const getDatasetFieldsById = async (id: string, name: string, acro: string) => {
     .join("");
   const createButton = `<button
     hx-post="create"
-    hx-vals='{"id": "${id}", "name": "${tableName}"}'
+    hx-vals='{"id": "${id}", "name": "${tableName}", "schema": "${schema}"}'
     >create table</button>`;
   const uploadButton = `<button
     hx-post="upload"
@@ -132,7 +132,7 @@ const uploadIntoTable = async (id: string, name: string) => {
   return await uploadData(id, name);
 };
 
-const getDatastoresById = async (id: string,  ckan_set: string) => {
+const getDatastoresById = async (id: string) => {
   const datasetMeta = await getDatasetMetaById(id);
   const datastoreRows = datasetMeta.result.resources
     .filter((r) => r.datastore_active && r.datastore_active !== "False")
@@ -147,7 +147,7 @@ const getDatastoresById = async (id: string,  ckan_set: string) => {
          <td class="td-record-count">${r.record_count?.toLocaleString() ?? "—"}</td>
          <td class="td-resource-id">${resourceId}</td>
          <td>
-           <a href="/fields-page?id=${resourceId}&acro=${r.name}&name=${id}&ckan_set=${ckan_set}"><button>check it out</button></a>
+           <a href="/fields-page?id=${resourceId}&acro=${r.name}&name=${id}"><button>check it out</button></a>
          </td>
        </tr>
      `;

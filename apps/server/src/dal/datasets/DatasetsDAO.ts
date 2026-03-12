@@ -100,25 +100,31 @@ const getDatasetMetaById = async (id: string) => {
   return result;
 };
 
-const createSchema = async (tableName: string) => {
+const checkIfSchemaExists = async (tableName: string) => {
+  const schema = `
+    SELECT c.schema_name from
+    ckan_sets c
+    inner join data_sources d on c.id = d.ckan_set
+    where table_name = $(tableName)
+  `
+  const schemaExists = await db.oneOrNone(schema, { tableName });
+  return schemaExists;
+}
+
+const createSchema = async (schemaName: string) => {
     const schema = `
-        SELECT c.schema_name from
-        ckan_sets c
-        inner join data_sources d on c.id = d.ckan_set
-        where table_name = $(tableName)
+      SELECT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = $(schemaName));
       `
-    const schemaExists = await db.oneOrNone(schema, { tableName });
-    console.log(schemaExists)
-    if (!schemaExists) return;
+    const schemaExists = await db.oneOrNone(schema, { schemaName });
+    if (schemaExists.length === 0) return;
     const sql = `
-      CREATE SCHEMA IF NOT EXISTS $(schemaExists);
+      CREATE SCHEMA IF NOT EXISTS $(schemaName);
       `
-    await db.none(sql, { schemaExists });
-    console.log(schemaExists)
+    await db.none(sql, { schemaName });
 }
 
 const createTable = async (data: Data, tableName: string) => {
-    console.log("creating table");
+  console.log("creating table");
   await createSchema(tableName);
   const resourceId = data.result.resource_id;
   const constraintName = `pkey_${tableName}`;

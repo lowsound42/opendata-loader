@@ -39,19 +39,19 @@ dataSetRouter.post("/upload", async (req, res) => {
 
 
 dataSetRouter.get("/fields", async (req, res) => {
-    const { id, name, acro } = req.query;
-    console.log(req.query)
+    const { id, name, acro, schema } = req.query;
   const data = await datasetController.getDatasetFieldsById(
     id as string,
     name as string,
-    acro as string
+    acro as string,
+    schema as string,
   );
   res.send(data);
 });
 
 dataSetRouter.get("/resource/datastores", async (req, reply) => {
-  const { id, ckan_set } = req.query as { id: string; ckan_set: string };
-  const html = await datasetController.getDatastoresById(id, ckan_set);
+    const { id } = req.query as { id: string; };
+  const html = await datasetController.getDatastoresById(id);
   reply.type("text/html").send(html);
 });
 
