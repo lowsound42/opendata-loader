@@ -1,5 +1,6 @@
 import express, { Application } from "express";
-import router from "./web/routes/dataset.routes";
+import datasetRouter from "./web/routes/dataset.routes";
+import configRouter from "./web/routes/config.routes";
 import loadConfig from "./config";
 import cors from "cors";
 import path from "path";
@@ -14,8 +15,8 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
-app.use(router);
-
+app.use(datasetRouter);
+app.use(configRouter)
 app.listen(Number(loadConfig().PORT), "0.0.0.0", () => {
   console.log(`Ahoy Cap'n, we be on port ${loadConfig().PORT}`);
 });

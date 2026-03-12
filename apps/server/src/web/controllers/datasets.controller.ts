@@ -1,4 +1,3 @@
-import { getBaseUrl } from "../../CKANApi/baseUrl";
 import { Data } from "../../core/datasets/Dataset";
 import {
   checkIfTableColumnsExist,
@@ -9,6 +8,7 @@ import {
   getDataSetsFromCKAN,
 } from "../../dal/datasets/DatasetsDAO";
 import { uploadData } from "../../dal/pipelines/process/processData";
+import { baseUrl } from "../urlStore";
 
 function toAcronym(input: string) {
   return input
@@ -61,7 +61,7 @@ const fixTableName = (name: string) => {
 };
 
 const getCityDatasets = async () => {
-  const datasets = await getDataSetsFromCKAN();
+    const datasets = await getDataSetsFromCKAN();
   const rows = datasets
     .map(
       (id, i) => `<tr>
@@ -78,7 +78,7 @@ const getCityDatasets = async () => {
 const getDatasetFieldsById = async (id: string, name: string, acro: string) => {
   const acroFromName = toAcronym(fixTableName(acro));
   const datasetMeta = await fetch(
-    `${getBaseUrl()}/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${0}`,
+    `${await baseUrl()}/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${0}`,
   );
     const tableName = `${acroFromName}_${fixTableName(name)}`
   const response = (await datasetMeta.json()) as Data;
@@ -122,7 +122,7 @@ const getDatasetFieldsById = async (id: string, name: string, acro: string) => {
 
 const createNewTable = async (id: string, name: string) => {
   const response = await fetch(
-    `${getBaseUrl()}/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${0}`,
+    `${await baseUrl()}/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${0}`,
   );
   const data: Data = (await response.json()) as Data;
   return await createTable(data, name);
@@ -132,7 +132,7 @@ const uploadIntoTable = async (id: string, name: string) => {
   return await uploadData(id, name);
 };
 
-const getDatastoresById = async (id: string) => {
+const getDatastoresById = async (id: string,  ckan_set: string) => {
   const datasetMeta = await getDatasetMetaById(id);
   const datastoreRows = datasetMeta.result.resources
     .filter((r) => r.datastore_active && r.datastore_active !== "False")
@@ -147,7 +147,7 @@ const getDatastoresById = async (id: string) => {
          <td class="td-record-count">${r.record_count?.toLocaleString() ?? "—"}</td>
          <td class="td-resource-id">${resourceId}</td>
          <td>
-           <a href="/fields-page?id=${resourceId}&acro=${r.name}&name=${id}"><button>check it out</button></a>
+           <a href="/fields-page?id=${resourceId}&acro=${r.name}&name=${id}&ckan_set=${ckan_set}"><button>check it out</button></a>
          </td>
        </tr>
      `;

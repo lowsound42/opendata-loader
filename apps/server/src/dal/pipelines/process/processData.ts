@@ -1,8 +1,8 @@
-import { getBaseUrl } from "../../../CKANApi/baseUrl";
 import { Data, DataResult, TableCheck } from "../../../core/datasets/Dataset";
 import { createTable, insertData } from "../../datasets/DatasetsDAO";
 import { db, pg } from "../../db";
 import { Downloads } from "../getDataSets";
+import { baseUrl } from "../../../web/urlStore";
 
 const checkIfTableExists = async (tableName: string) => {
   console.log("checking table");
@@ -26,7 +26,7 @@ const uploadData = async (id: string, tableName: string) => {
   let offset = 0;
   while (true) {
     const response = await fetch(
-      `${getBaseUrl()}/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${offset}`,
+      `${await baseUrl()}/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${offset}`,
     );
     const data: Data = (await response.json()) as Data;
 
@@ -47,7 +47,7 @@ const processData = async (dataset: Downloads, tableName: string) => {
   while (true) {
     console.log(offset);
     const response = await fetch(
-      `${getBaseUrl()}/api/3/action/datastore_search?resource_id=${dataset.id}&limit=100&offset=${offset}`,
+      `${await baseUrl()}/api/3/action/datastore_search?resource_id=${dataset.id}&limit=100&offset=${offset}`,
     );
     const data: Data = (await response.json()) as Data;
 

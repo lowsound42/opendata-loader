@@ -1,4 +1,4 @@
-import { getBaseUrl } from "../../CKANApi/baseUrl";
+import { baseUrl } from "../../web/urlStore";
 
 type APIResult = {
   result: {
@@ -16,7 +16,7 @@ const downloadResources: Downloads[] = [];
 
 const callCKAN = async (packageId: string) => {
   const result = fetch(
-    `${getBaseUrl()}/api/3/action/package_show?id=${packageId}`,
+    `${await baseUrl()}/api/3/action/package_show?id=${packageId}`,
     { method: "GET" },
   );
 

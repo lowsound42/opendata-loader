@@ -93,14 +93,33 @@ const getDataSetsFromCKAN = async () => {
   return result;
 };
 
+
 const getDatasetMetaById = async (id: string) => {
   const response = await getDatasetByIdString(id);
   const result = (await response.json()) as ResourceArray;
   return result;
 };
 
+const createSchema = async (tableName: string) => {
+    const schema = `
+        SELECT c.schema_name from
+        ckan_sets c
+        inner join data_sources d on c.id = d.ckan_set
+        where table_name = $(tableName)
+      `
+    const schemaExists = await db.oneOrNone(schema, { tableName });
+    console.log(schemaExists)
+    if (!schemaExists) return;
+    const sql = `
+      CREATE SCHEMA IF NOT EXISTS $(schemaExists);
+      `
+    await db.none(sql, { schemaExists });
+    console.log(schemaExists)
+}
+
 const createTable = async (data: Data, tableName: string) => {
-  console.log("creating table");
+    console.log("creating table");
+  await createSchema(tableName);
   const resourceId = data.result.resource_id;
   const constraintName = `pkey_${tableName}`;
   const fieldCreators = [];
