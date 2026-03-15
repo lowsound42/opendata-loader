@@ -13,11 +13,10 @@ import { baseUrl } from "../urlStore";
 function toAcronym(input: string) {
   return input
     .split(/[\s_]+/)
-    .map(word => word[0])
-    .join('')
+    .map((word) => word[0])
+    .join("")
     .toLowerCase();
 }
-
 
 const STOP_WORDS = new Set([
   "a",
@@ -44,7 +43,7 @@ const STOP_WORDS = new Set([
 ]);
 
 const fixTableName = (name: string) => {
-    console.log(name)
+  console.log(name);
   return name
     .toLowerCase()
     .replace(/\b\d{1,4}[-\/]\d{1,2}[-\/]\d{1,4}\b/g, "")
@@ -61,7 +60,8 @@ const fixTableName = (name: string) => {
 };
 
 const getCityDatasets = async () => {
-    const datasets = await getDataSetsFromCKAN();
+  console.log("next");
+  const datasets = await getDataSetsFromCKAN();
   const rows = datasets
     .map(
       (id, i) => `<tr>
@@ -75,20 +75,25 @@ const getCityDatasets = async () => {
   return rows;
 };
 
-const getDatasetFieldsById = async (id: string, name: string, acro: string, schema: string) => {
+const getDatasetFieldsById = async (
+  id: string,
+  name: string,
+  acro: string,
+  schema: string,
+) => {
   const acroFromName = toAcronym(fixTableName(acro));
   const datasetMeta = await fetch(
     `${await baseUrl()}/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${0}`,
   );
-    const tableName = `${acroFromName}_${fixTableName(name)}`
+  const tableName = `${acroFromName}_${fixTableName(name)}`;
   const response = (await datasetMeta.json()) as Data;
   const fields = response.result.fields.map((f) => {
     return f.id;
   });
-    const status = await checkIfTableExists(tableName);
-    console.log(status)
-    let populated = false;
-    if (status) {
+  const status = await checkIfTableExists(tableName);
+  console.log(status);
+  let populated = false;
+  if (status) {
     populated = await checkIfTableHasData(tableName);
   }
   const rows = response.result.fields
@@ -111,7 +116,7 @@ const getDatasetFieldsById = async (id: string, name: string, acro: string, sche
   return `
     <div id="fields-status">
       ${status ? `<p>Table Exists <span class="greenStatus"></span></p>` : `<p>Table Does Not Exist <span class="redStatus"></span></p>`}
-      ${!status ? createButton :  !populated ? uploadButton : "<p>Table and data exist!</p>"}
+      ${!status ? createButton : !populated ? uploadButton : "<p>Table and data exist!</p>"}
     </div>
     <table>
       <tbody id="fields" hx-swap-oob="true">

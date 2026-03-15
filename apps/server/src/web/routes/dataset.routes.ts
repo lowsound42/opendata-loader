@@ -1,13 +1,17 @@
 import { Router, Request, Response } from "express";
 import { runPipeLines } from "../../dal/pipelines";
 import * as datasetController from "../controllers/datasets.controller";
-import * as homeController from "../controllers/home.controller"
+import * as homeController from "../controllers/home.controller";
 import path from "path";
 
 const datasetRouter = Router();
 
 datasetRouter.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
+  res.sendFile(path.join(__dirname, "../../../public/index.html"));
+});
+
+datasetRouter.get("/sets", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../../public/dataset.html"));
 });
 
 datasetRouter.get("/meta", async (req: Request, res: Response) => {
@@ -43,9 +47,8 @@ datasetRouter.post("/upload", async (req, res) => {
   res.send(true);
 });
 
-
 datasetRouter.get("/fields", async (req, res) => {
-    const { id, name, acro, schema } = req.query;
+  const { id, name, acro, schema } = req.query;
   const data = await datasetController.getDatasetFieldsById(
     id as string,
     name as string,
@@ -56,7 +59,7 @@ datasetRouter.get("/fields", async (req, res) => {
 });
 
 datasetRouter.get("/resource/datastores", async (req, reply) => {
-    const { id } = req.query as { id: string; };
+  const { id } = req.query as { id: string };
   const html = await datasetController.getDatastoresById(id);
   reply.type("text/html").send(html);
 });
@@ -68,6 +71,7 @@ datasetRouter.get("/resource/datafiles", async (req, reply) => {
 });
 
 datasetRouter.get("/datasets", async (req: Request, res: Response) => {
+  console.log("start");
   const rows = await datasetController.getCityDatasets();
   res.send(`<tbody>${rows}</tbody>`);
 });

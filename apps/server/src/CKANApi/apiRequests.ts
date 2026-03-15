@@ -1,6 +1,7 @@
 import { baseUrl } from "../web/urlStore";
 
 const getDatasets = async () => {
+  console.log(await baseUrl());
   const response = fetch(`${await baseUrl()}/api/3/action/package_list`, {
     method: "GET",
   });
@@ -8,9 +9,12 @@ const getDatasets = async () => {
 };
 
 const getDatasetByIdString = async (id: string) => {
-  const response = fetch(`${await baseUrl()}/api/3/action/package_show?id=${id}`, {
-    method: "GET",
-  });
+  const response = fetch(
+    `${await baseUrl()}/api/3/action/package_show?id=${id}`,
+    {
+      method: "GET",
+    },
+  );
   return response;
 };
 

@@ -1,7 +1,4 @@
-import {
-  getDatasets,
-  getDatasetByIdString,
-} from "../../CKANApi/apiRequests";
+import { getDatasets, getDatasetByIdString } from "../../CKANApi/apiRequests";
 import {
   Data,
   DataResult,
@@ -13,9 +10,9 @@ import { updateTableStatus, insertTableLog } from "../dashboard/DashDAO";
 import { db, pg } from "../db";
 export const normalize = (name: string) =>
   name
-    .replace(/[^a-zA-Z0-9_]/g, '_')  // replace any invalid char with _
-    .replace(/^(\d)/, '_$1')           // prefix with _ if starts with digit
-    .replace(/_+/g, '_')               // collapse multiple _ into one
+    .replace(/[^a-zA-Z0-9_]/g, "_") // replace any invalid char with _
+    .replace(/^(\d)/, "_$1") // prefix with _ if starts with digit
+    .replace(/_+/g, "_") // collapse multiple _ into one
     .toLowerCase();
 
 const ALLOWED_TYPES = new Set([
@@ -45,10 +42,10 @@ const getDatasetMeta = async () => {
 };
 
 const checkIfTableColumnsExist = async (columns: string[]) => {
-    const normalizedColumns = columns.map(c => {
-        return normalize(c)
-    })
-    const numColumns = columns.length;
+  const normalizedColumns = columns.map((c) => {
+    return normalize(c);
+  });
+  const numColumns = columns.length;
   const sql = `
     SELECT table_name
     FROM information_schema.columns
@@ -68,39 +65,39 @@ const checkIfTableColumnsExist = async (columns: string[]) => {
 };
 
 const checkIfTableExists = async (tableName: string) => {
-    console.log(tableName)
+  console.log(tableName, "exist??????");
   const sql = `
     SELECT id from data_sources
     where table_name = $(tableName);
-  `
-  try{
-    const {id} = await db.oneOrNone(sql, { tableName });
+  `;
+  try {
+    const { id } = await db.oneOrNone(sql, { tableName });
     return id;
   } catch (err) {
-    return null
+    return null;
   }
-}
+};
 
 const checkIfTableHasData = async (tableName: string) => {
   const sql = `
     SELECT id from data_sources
     where table_name = $(tableName)
     and current_status = 'populated';
-  `
-  try{
-    const {id} = await db.oneOrNone(sql, { tableName });
+  `;
+  try {
+    const { id } = await db.oneOrNone(sql, { tableName });
     return id;
   } catch (err) {
-    return null
+    return null;
   }
-}
+};
 
 const getDataSetsFromCKAN = async () => {
+  console.log("then");
   const response = await getDatasets();
   const { result } = (await response.json()) as DataSets;
   return result;
 };
-
 
 const getDatasetMetaById = async (id: string) => {
   const response = await getDatasetByIdString(id);
@@ -114,26 +111,25 @@ const checkIfSchemaExists = async (tableName: string) => {
     ckan_sets c
     inner join data_sources d on c.id = d.ckan_set
     where table_name = $(tableName)
-  `
+  `;
   const schemaExists = await db.oneOrNone(schema, { tableName });
   return schemaExists;
-}
+};
 
 const createSchema = async (schemaName: string) => {
-    const schema = `
+  const schema = `
       SELECT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = $(schemaName));
-      `
-    const schemaExists = await db.oneOrNone(schema, { schemaName });
-    if (schemaExists.length === 0) return;
-    const sql = `
+      `;
+  const schemaExists = await db.oneOrNone(schema, { schemaName });
+  if (schemaExists.length === 0) return;
+  const sql = `
       CREATE SCHEMA IF NOT EXISTS $(schemaName);
-      `
-    await db.none(sql, { schemaName });
-}
+      `;
+  await db.none(sql, { schemaName });
+};
 
 const createTable = async (data: Data, tableName: string) => {
   console.log("creating table");
-  await createSchema(tableName);
   const resourceId = data.result.resource_id;
   const constraintName = `pkey_${tableName}`;
   const fieldCreators = [];
@@ -153,7 +149,7 @@ const createTable = async (data: Data, tableName: string) => {
         CONSTRAINT ${pg.as.name(`resource_record_uq_${tableName}`)} UNIQUE (resource_id, _id)
       )`;
 
-    console.log(sql)
+  console.log(sql);
   try {
     const id = await insertTableLog(tableName, resourceId, TableStatus.init);
     await db.none(sql, { tableName });
@@ -189,7 +185,7 @@ const insertData = async (
     pg.helpers.insert(rows, cs) +
     ` ON CONFLICT (resource_id, _id) DO UPDATE SET ${cs.assignColumns({ from: "EXCLUDED", skip: ["id", "resource_id", "_id"] })}`;
   try {
-    await updateTableStatus(id, TableStatus.populating );
+    await updateTableStatus(id, TableStatus.populating);
     await db.none(sql);
     await updateTableStatus(id, TableStatus.populated);
   } catch (err) {
