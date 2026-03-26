@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CoT Open Data Loader</title>
+    <title>Open Data Loader</title>
     <link rel="stylesheet" href="./resources.css" />
     <script src="./htmx.js"></script>
   </head>
   <body>
-    <h1>CoT Open Data</h1>
+    <h1>What's all this then?</h1>
     <div id="datasets">
       <h2>Resource Fields</h2>
       <div
@@ -18,9 +18,8 @@
         hx-swap="outerHTML"
         hx-vals="js:{
         id: new URLSearchParams(window.location.search).get('id'),
-        name: new URLSearchParams(window.location.search).get('name'),
-        acro: new URLSearchParams(window.location.search).get('acro'),
-        acro: new URLSearchParams(window.location.search).get('schema'),
+        name: new URLSearchParams(window.location.search).get('bucket_name'),
+        acro: new URLSearchParams(window.location.search).get('table_name'),
         }"
       ></div>
 

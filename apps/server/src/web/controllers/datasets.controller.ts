@@ -81,11 +81,13 @@ const getDatasetFieldsById = async (
   acro: string,
   schema: string,
 ) => {
-  const acroFromName = toAcronym(fixTableName(acro));
+    const acroFromName = toAcronym(fixTableName(name));
+    console.log('ACRO', acroFromName)
   const datasetMeta = await fetch(
     `${await baseUrl()}/api/3/action/datastore_search?resource_id=${id}&limit=100&offset=${0}`,
   );
-  const tableName = `${acroFromName}_${fixTableName(name)}`;
+    const tableName = `${acroFromName}_${fixTableName(acro)}`;
+    console.log('DOES IT', tableName)
   const response = (await datasetMeta.json()) as Data;
   const fields = response.result.fields.map((f) => {
     return f.id;
@@ -152,7 +154,7 @@ const getDatastoresById = async (id: string) => {
          <td class="td-record-count">${r.record_count?.toLocaleString() ?? "—"}</td>
          <td class="td-resource-id">${resourceId}</td>
          <td>
-           <a href="/fields-page?id=${resourceId}&acro=${r.name}&name=${id}"><button>check it out</button></a>
+           <a href="/fields-page?id=${resourceId}&table_name=${r.name}&bucket_name=${id}"><button>check it out</button></a>
          </td>
        </tr>
      `;

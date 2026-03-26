@@ -7,11 +7,11 @@ import path from "path";
 const datasetRouter = Router();
 
 datasetRouter.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../public/index.html"));
+  res.sendFile(path.join(__dirname, "../../../public/dataset.html"));
 });
 
-datasetRouter.get("/sets", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../public/dataset.html"));
+datasetRouter.get("/dash", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../../public/dash.html"));
 });
 
 datasetRouter.get("/meta", async (req: Request, res: Response) => {

@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
-    "dev": "NODE_ENV=local tsx watch src/server.ts",
+    "dev": "NODE_ENV=local NODE_EXTRA_CA_CERTS=./extra-ca-certs.cer tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json"
   },
   "keywords": [],
