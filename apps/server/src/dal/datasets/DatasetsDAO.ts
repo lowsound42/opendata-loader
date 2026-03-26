@@ -65,7 +65,6 @@ const checkIfTableColumnsExist = async (columns: string[]) => {
 };
 
 const checkIfTableExists = async (tableName: string) => {
-  console.log(tableName, "exist??????");
   const sql = `
     SELECT id from data_sources
     where table_name = $(tableName);
